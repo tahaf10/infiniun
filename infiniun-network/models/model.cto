@@ -52,6 +52,7 @@ participant Hospital identified by hospitalID {
 participant Pharmacy identified by pharmacyID {
   o String pharmacyID
   o String contact
+  o String pharmacyMedDB
 }
 
 asset TreatmentLabTest identified by treatmentLabTestID {
@@ -64,8 +65,7 @@ asset SharedLabTest identified by sharedLabTestID{
   o String sharedLabTestID
   o String stuff
   --> TreatmentLabTest treatmentLabTest 
-  --> Lab lab optional
-  --> Hospital hospital optional
+  --> Lab lab 
 }
 
 asset TreatmentDrugs identified by treatmentDrugsID{
@@ -74,36 +74,60 @@ asset TreatmentDrugs identified by treatmentDrugsID{
   --> TreatmentData treatmentData
 }
 
-asset SharedMedicines identified by sharedMedID{
-  o String sharedMedID
-  o String stuff
+asset SharedDrugs identified by sharedDrugID{
+  o String sharedDrugID
   --> TreatmentDrugs treatmentDrugs 
   --> Pharmacy pharmacy
+}
+
+asset HospitalTreatment identified by hospTreatmentID{
+  o String hospTreatmentID
+  o String stuff
+  --> TreatmentData treatmentData
+}
+
+asset SharedHospital identified by sharedHospitalID{
+  o String sharedHospitalID
+  --> HospitalTreatment hospitalTreatment
+  --> Hospital hospital
 }
 
 asset TreatmentData identified by treatmentID{
 	o String treatmentID
   o String procedure
+  o Boolean hospitalVisitNeeded
+  o Boolean medRequired
+  o Boolean labTestRequired
+
   --> ConsultationData consultationData
 }
 
 asset ConsultationData identified by consultationID {
   o String consultationID
   o String illnessDescription
-  o Boolean treatmentRequired
 
   --> Patient patient
   --> Doctor doctor
 }
 
+transaction LabTest {
+  o SharedLabTest sharedLabTest
+}
+
+transaction ReferHospital {
+  o SharedHospital sharedHospital
+}
+
 transaction Consultation {
   o ConsultationData consultationData
   o TreatmentData treatmentData
+  o TreatmentDrugs treatmentDrugs optional
+  o TreatmentLabTest treatmentLabTest optional 
+  o HospitalTreatment hospitalTreatment optional
 }
 
-transaction Treatment {
-  o TreatmentData treatmentData
-  o Boolean testRequired
+transaction GetDrugs {
+  o SharedDrugs sharedDrugs
 }
 
 transaction addDoctor {
