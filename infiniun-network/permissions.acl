@@ -1,0 +1,97 @@
+/*
+*/
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+
+rule PatientConsultationACL {
+    description: "Patients can read or delete their consultation Data"
+    participant(m): "org.acme.Patient"
+    operation: READ, DELETE
+    resource(v): "org.acme.ConsultationData"
+    condition: (v.patient.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule DoctorCreateConsultationACL {
+    description: "Doctor can create a consultation Data asset"
+    participant: "org.acme.Doctor"
+    operation: CREATE
+    resource: "org.acme.ConsultationData"
+    action: ALLOW
+}
+
+rule DoctorReadOrUpdateConsultationACL {
+    description: "Doctor can read a consultation which he is a part of"
+    participant(m): "org.acme.Doctor"
+    operation: READ, UPDATE
+    resource(v): "org.acme.ConsultationData"
+    condition: (v.doctor.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule DoctorCreateTreatmentACL {
+    description: "Doctor can create a Treatment Data asset"
+    participant: "org.acme.Doctor"
+    operation: CREATE
+    resource: "org.acme.TreatmentData"
+    action: ALLOW
+}
+
+rule DoctorReadOrUpdateTreatmentACL {
+    description: "Doctor can read a consultation which he is a part of"
+    participant(m): "org.acme.Doctor"
+    operation: READ, UPDATE
+    resource(v): "org.acme.TreatmentData"
+    condition: (v.doctor.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule GetDrugsACL {
+    description: "Rule to allow Pharmacies to access Patient's prescription"
+    participant(m): "org.acme.Pharmacy"
+    operation: READ
+    resource(v): "org.acme.SharedDrugs"
+    condition: (v.pharmacy.pharmacyID == m.getIdentifier())
+    action: ALLOW
+}
+
+rule LabTestACL {
+    description: "Rule to allow Labs to access Patient's Data"
+    participant(m): "org.acme.Lab"
+    operation: READ
+    resource(v): "org.acme.SharedLabTest"
+    condition: (v.lab.labID == m.getIdentifier())
+    action: ALLOW
+}
+
+rule ReferHospitalACL {
+    description: "Rule to allow Pharmacies to access Patient's prescription"
+    participant(m): "org.acme.Hospital"
+    operation: READ
+    resource(v): "org.acme.SharedHospital"
+    condition: (v.hospital.hospitalID == m.getIdentifier())
+    action: ALLOW
+}
+
+rule DenyALL {
+    description: "Deny All resources to everyone"
+    participant: "org.acme.*"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: DENY
+}
