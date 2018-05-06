@@ -5,6 +5,11 @@ participant Patient identified by patientID {
   o String contact 
 }
 
+participant PatientRelative identified by patientRelativeID{
+  o String patientRelativeID
+  --> Patient patient
+}
+
 concept DoctorSchedule {
   o Boolean AM12to1 optional
   o Boolean AM1to2 optional
@@ -148,4 +153,8 @@ transaction addLab {
 
 transaction addPharmacy {
   o Pharmacy pharmacy
+}
+
+transaction addPatientRelative{
+  o PatientRelative patientRelative
 }
