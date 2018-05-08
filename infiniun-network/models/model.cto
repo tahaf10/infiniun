@@ -11,37 +11,37 @@ participant PatientRelative identified by patientRelativeID{
 }
 
 concept DoctorSchedule {
-o String[] day1 regex=/^[0-1]{24}$/
-o String[] day2 regex=/^[0-1]{24}$/
-o String[] day3 regex=/^[0-1]{24}$/
-o String[] day4 regex=/^[0-1]{24}$/
-o String[] day5 regex=/^[0-1]{24}$/
-o String[] day6 regex=/^[0-1]{24}$/
-o String[] day7 regex=/^[0-1]{24}$/
-o String[] day8 regex=/^[0-1]{24}$/
-o String[] day9 regex=/^[0-1]{24}$/
-o String[] day10 regex=/^[0-1]{24}$/
-o String[] day11 regex=/^[0-1]{24}$/
-o String[] day12 regex=/^[0-1]{24}$/
-o String[] day13 regex=/^[0-1]{24}$/
-o String[] day14 regex=/^[0-1]{24}$/
-o String[] day15 regex=/^[0-1]{24}$/
-o String[] day16 regex=/^[0-1]{24}$/
-o String[] day17 regex=/^[0-1]{24}$/
-o String[] day18 regex=/^[0-1]{24}$/
-o String[] day19 regex=/^[0-1]{24}$/
-o String[] day20 regex=/^[0-1]{24}$/
-o String[] day21 regex=/^[0-1]{24}$/
-o String[] day22 regex=/^[0-1]{24}$/
-o String[] day23 regex=/^[0-1]{24}$/
-o String[] day24 regex=/^[0-1]{24}$/
-o String[] day25 regex=/^[0-1]{24}$/
-o String[] day26 regex=/^[0-1]{24}$/
-o String[] day27 regex=/^[0-1]{24}$/
-o String[] day28 regex=/^[0-1]{24}$/
-o String[] day29 regex=/^[0-1]{24}$/
-o String[] day30 regex=/^[0-1]{24}$/
-o String[] day31 regex=/^[0-1]{24}$/
+o String[] day1 regex=/^[0-1]{1}$/
+o String[] day2 regex=/^[0-1]{1}$/
+o String[] day3 regex=/^[0-1]{1}$/
+o String[] day4 regex=/^[0-1]{1}$/
+o String[] day5 regex=/^[0-1]{1}$/
+o String[] day6 regex=/^[0-1]{1}$/
+o String[] day7 regex=/^[0-1]{1}$/
+o String[] day8 regex=/^[0-1]{1}$/
+o String[] day9 regex=/^[0-1]{1}$/
+o String[] day10 regex=/^[0-1]{1}$/
+o String[] day11 regex=/^[0-1]{1}$/
+o String[] day12 regex=/^[0-1]{1}$/
+o String[] day13 regex=/^[0-1]{1}$/
+o String[] day14 regex=/^[0-1]{1}$/
+o String[] day15 regex=/^[0-1]{1}$/
+o String[] day16 regex=/^[0-1]{1}$/
+o String[] day17 regex=/^[0-1]{1}$/
+o String[] day18 regex=/^[0-1]{1}$/
+o String[] day19 regex=/^[0-1]{1}$/
+o String[] day20 regex=/^[0-1]{1}$/
+o String[] day21 regex=/^[0-1]{1}$/
+o String[] day22 regex=/^[0-1]{1}$/
+o String[] day23 regex=/^[0-1]{1}$/
+o String[] day24 regex=/^[0-1]{1}$/
+o String[] day25 regex=/^[0-1]{1}$/
+o String[] day26 regex=/^[0-1]{1}$/
+o String[] day27 regex=/^[0-1]{1}$/
+o String[] day28 regex=/^[0-1]{1}$/
+o String[] day29 regex=/^[0-1]{1}$/
+o String[] day30 regex=/^[0-1]{1}$/
+o String[] day31 regex=/^[0-1]{1}$/
 }
 
 participant Doctor identified by doctorID {
