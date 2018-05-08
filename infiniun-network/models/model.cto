@@ -11,30 +11,37 @@ participant PatientRelative identified by patientRelativeID{
 }
 
 concept DoctorSchedule {
-  o Boolean AM12to1 optional
-  o Boolean AM1to2 optional
-  o Boolean AM2to3 optional
-  o Boolean AM3to4 optional
-  o Boolean AM4to5 optional
-  o Boolean AM5to6 optional
-  o Boolean AM6to7 optional
-  o Boolean AM7to8 optional
-  o Boolean AM8to9 optional
-  o Boolean AM9to10 optional
-  o Boolean AM10to11 optional
-  o Boolean AM11to12 optional
-  o Boolean PM12to1 optional
-  o Boolean PM1to2 optional
-  o Boolean PM2to3 optional
-  o Boolean PM3to4 optional
-  o Boolean PM4to5 optional
-  o Boolean PM5to6 optional
-  o Boolean PM6to7 optional
-  o Boolean PM7to8 optional
-  o Boolean PM8to9 optional
-  o Boolean PM9to10 optional
-  o Boolean PM10to11 optional
-  o Boolean PM11to12 optional
+o String[] day1 regex=/^[0-1]{24}$/
+o String[] day2 regex=/^[0-1]{24}$/
+o String[] day3 regex=/^[0-1]{24}$/
+o String[] day4 regex=/^[0-1]{24}$/
+o String[] day5 regex=/^[0-1]{24}$/
+o String[] day6 regex=/^[0-1]{24}$/
+o String[] day7 regex=/^[0-1]{24}$/
+o String[] day8 regex=/^[0-1]{24}$/
+o String[] day9 regex=/^[0-1]{24}$/
+o String[] day10 regex=/^[0-1]{24}$/
+o String[] day11 regex=/^[0-1]{24}$/
+o String[] day12 regex=/^[0-1]{24}$/
+o String[] day13 regex=/^[0-1]{24}$/
+o String[] day14 regex=/^[0-1]{24}$/
+o String[] day15 regex=/^[0-1]{24}$/
+o String[] day16 regex=/^[0-1]{24}$/
+o String[] day17 regex=/^[0-1]{24}$/
+o String[] day18 regex=/^[0-1]{24}$/
+o String[] day19 regex=/^[0-1]{24}$/
+o String[] day20 regex=/^[0-1]{24}$/
+o String[] day21 regex=/^[0-1]{24}$/
+o String[] day22 regex=/^[0-1]{24}$/
+o String[] day23 regex=/^[0-1]{24}$/
+o String[] day24 regex=/^[0-1]{24}$/
+o String[] day25 regex=/^[0-1]{24}$/
+o String[] day26 regex=/^[0-1]{24}$/
+o String[] day27 regex=/^[0-1]{24}$/
+o String[] day28 regex=/^[0-1]{24}$/
+o String[] day29 regex=/^[0-1]{24}$/
+o String[] day30 regex=/^[0-1]{24}$/
+o String[] day31 regex=/^[0-1]{24}$/
 }
 
 participant Doctor identified by doctorID {
