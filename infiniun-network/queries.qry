@@ -1,0 +1,44 @@
+/*
+Query file for infiniun model
+*/
+
+query selectConsultation {
+  description: "Select a consultation"
+  statement:
+      SELECT org.acme.Consultation
+          WHERE (consultationID == _$consultationID)
+}
+
+
+query getPharmacy {
+  description: "Pharmacy gets list of prescriptions to serve"
+  statement:
+      SELECT org.acme.SharedDrugs
+          WHERE (pharmacy == _$pharmacyID AND orderCompleted == false)
+}
+
+query docEntersConsultation {
+  description: "Doctor gets into a consultation"
+  statement:
+      SELECT org.acme.Consultation
+          WHERE (doctor == _$doctor AND consultationCompleted == false)
+}
+
+
+query getAvailableDoctors {
+  description: "Returns a list of doctors available at a specific hour"
+  statement:
+      SELECT org.acme.Doctor 
+        FROM org.acme.Schedule
+          WHERE()
+        
+}
+
+query getDoctorConsultation {
+  description: "Returns a list of doctors available at a specific hour"
+  statement:
+      SELECT org.acme.Doctor 
+        FROM org.acme.Schedule
+          WHERE()
+        
+}
