@@ -87,18 +87,10 @@ function addDoctor(newDoctor) {
     */
   
     function labTest(test) {
-        var factory = getFactory();
-        var NS = 'org.acme';
-  
-        var sharedLabTest = factory.newResource(NS,'SharedLabTest',test.sharedLabTest.sharedLabTestID);
-        sharedLabTest.treatmentLabTest = factory.newRelationship(NS,'TreatmentLabTest',test.sharedLabTest.treatmentLabTest);
-        sharedLabTest.lab = factory.newRelationship(NS,'Lab',test.sharedLabTest.lab);
-  
-        
-        
+
         return getAssetRegistry('org.acme.SharedLabTest')
           .then(function(sharedLabTestRegistry){
-              sharedLabTestRegistry.addAll([sharedLabTest]);
+              sharedLabTestRegistry.addAll([test.sharedLabTest]);
           })
     }
   
@@ -119,12 +111,52 @@ function addDoctor(newDoctor) {
 
    
   
+
+/**
+* @param {org.acme.GetAvailableDoctors} sc
+* @transaction
+ */
+  
+function getAvailableDoctors(sc) {
+    
+    return query('availableDoctors', {"hour" : sc.availability.hour , "day" : sc.availability.day})
+    .then(function(results){
+        var availablDocs = [];
+
+        for (var n = 0; n < results.length; n++) {
+            var schedule_asset = results[n];
+            availableDocs[n] = schedule_asset.doctor.getIdentifier();
+        }
+
+        return availableDocs;
+    })
+
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.acme.Scheduler} sc The sample transaction instance.
+ * @transaction
+ */
+function scheduler(sc) {  // eslint-disable-line no-unused-vars
+    // Get the asset registry for the asset.
+  
+  return getAssetRegistry('org.acme.Schedule')
+    .then(function(scheduleRegistry){
+  
+            scheduleRegistry.addAll([sc.schedule]);
+    })
+  
+}
+ 
+
+
     /**
     * @param {org.acme.StartConsultation} newConsultation
     * @transaction
     */
   
-function startConsultation(newConsultation) {
+   function startConsultation(newConsultation) {
     var factory = getFactory(); 
     var NS='org.acme';
   
@@ -142,166 +174,6 @@ function startConsultation(newConsultation) {
 
 }
 
-/**
-* @param {org.acme.INITSchedule} sc
-* @transaction
- */
-  
-function initschedule(sc) {
-    
-    return getAssetRegistry('org.acme.Schedule')
-    .then(function(scheduleRegistry){
-        scheduleRegistry.addAll([sc.schedule]);
-    })
-
-}
-
-/**
- * Sample transaction processor function.
- * @param {org.acme.Scheduler} sc The sample transaction instance.
- * @transaction
- */
-function scheduler(sc) {  // eslint-disable-line no-unused-vars
-    // Get the asset registry for the asset.
-  
-  return getAssetRegistry('org.acme.Schedule')
-    .then(function(scheduleRegistry){
-  
-  for(var v=0;v<sc.availablTimes.length;v++){
-    
-  	if(sc.availablTimes[v].day=="monday"){
-      for(var x=0;x<sc.availablTimes[v].time.length;x++){
-         inserToSchedule(sc,sc.availablTimes[v].time[x], sc.schedule.availableDays.monday);
-      }
-    }
-    else if(sc.availablTimes[v].day=="tuesday"){
-      for(var x=0;x<sc.availablTimes[v].time.length;x++){
-          inserToSchedule(sc,sc.availablTimes[v].time[x], sc.schedule.availableDays.tuesday);
-      }
-    }
-    else if(sc.availablTimes[v].day=="wednesday"){
-      for(var x=0;x<sc.availablTimes[v].time.length;x++){
-                  inserToSchedule(sc,sc.availablTimes[v].time[x], sc.schedule.availableDays.wednesday);
-
-      }
-    }
-    else if(sc.availablTimes[v].day=="thursday"){
-      for(var x=0;x<sc.availablTimes[v].time.length;x++){
-         inserToSchedule(sc,sc.availablTimes[v].time[x], sc.schedule.availableDays.thursday);
-
-      }
-    }
-    else if(sc.availablTimes[v].day=="friday"){
-      for(var x=0;x<sc.availablTimes[v].time.length;x++){
-         inserToSchedule(sc,sc.availablTimes[v].time[x], sc.schedule.availableDays.friday);
-
-      }
-    }
-    else if(sc.availablTimes[v].day=="saturday"){
-      for(var x=0;x<sc.availablTimes[v].time.length;x++){
-          inserToSchedule(sc,sc.availablTimes[v].time[x], sc.schedule.availableDays.saturday);
-
-      }
-    }
-    else if(sc.availablTimes[v].day=="sunday"){
-      for(var x=0;x<sc.availablTimes[v].time.length;x++){
-        inserToSchedule(sc,sc.availablTimes[v].time[x],sc.schedule.availableDays.sunday);
-        
-      }
-    }
-    }
-    })
-  }
-    
-  function inserToSchedule(sc,time,day){
-    switch(time) {
-          case "AM00":
-             day.AM00.push(sc.docID);
-             break;
-        
-          case "AM01":
-              day.AM01.push(sc.docID);
-              break;
-          case "AM02":
-              day.AM02.push(sc.docID);
-              break;
-          case "AM03":
-             day.AM03.push(sc.docID);
-              break;
-          case "AM04":
-              day.AM04.push(sc.docID);
-              break;
-
-          case "AM05":
-              day.AM05.push(sc.docID);
-              break;
-          case "AM06":
-              day.AM06.push(sc.docID);
-              break;
-          case "AM07":
-              day.AM07.push(sc.docID);
-              break;
-          case "AM08":
-              day.AM08.push(sc.docID);
-              break;
-          case "AM09":
-               day.AM09.push(sc.docID);
-              break;
-          case "AM10":
-              day.AM10.push(sc.docID);
-              break;
-          case "AM11":
-              day.AM11.push(sc.docID);
-              break;
-          case "PM00":
-               day.PM00.push(sc.docID);
-              break;
-          case "PM01":
-               day.PM01.push(sc.docID);
-              break;
-          case "PM02":
-               day.PM02.push(sc.docID);
-              break;
-          case "PM03":
-               day.PM03.push(sc.docID);
-              break;
-        case "PM04":
-               day.PM04.push(sc.docID);
-              break;
-        case "PM05":
-               day.PM05.push(sc.docID);
-              break;
-        case "PM06":
-               day.PM06.push(sc.docID);
-              break;
-        case "PM07":
-               day.PM07.push(sc.docID);
-              break;
-        case "PM08":
-               day.PM08.push(sc.docID);
-              break;
-        case "PM09":
-               day.PM09.push(sc.docID);
-              break;
-        case "PM10":
-               day.PM10.push(sc.docID);
-              break;
-        case "PM11":
-               day.PM11.push(sc.docID);
-              break;
-        
-           default:
-        }
-   
-  
-  return getAssetRegistry('org.acme.Schedule')
-    .then(function(scheduleRegistry){
-     scheduleRegistry.update(sc.schedule);
-     
-    })
-
-  
-}
 
   /**
   * @param {org.acme.EndConsultation} newConsultation

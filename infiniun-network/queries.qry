@@ -6,7 +6,7 @@ query selectConsultation {
   description: "Select a consultation"
   statement:
       SELECT org.acme.Consultation
-          WHERE (consultationID == _$consultationID)
+          WHERE (patient == _$patient AND consultationCompleted == false)
 }
 
 
@@ -14,7 +14,13 @@ query getPharmacy {
   description: "Pharmacy gets list of prescriptions to serve"
   statement:
       SELECT org.acme.SharedDrugs
-          WHERE (pharmacy == _$pharmacyID AND orderCompleted == false)
+          WHERE (pharmacy == _$pharmacy AND orderCompleted == false)
+}
+query getLab {
+  description: "Lab gets a list of lab test to complete"
+  statement:
+      SELECT org.acme.SharedLabTest
+          WHERE (lab == _$lab AND testCompleted == false)
 }
 
 query docEntersConsultation {
@@ -24,21 +30,8 @@ query docEntersConsultation {
           WHERE (doctor == _$doctor AND consultationCompleted == false)
 }
 
-
-query getAvailableDoctors {
-  description: "Returns a list of doctors available at a specific hour"
-  statement:
-      SELECT org.acme.Doctor 
-        FROM org.acme.Schedule
-          WHERE()
-        
-}
-
-query getDoctorConsultation {
-  description: "Returns a list of doctors available at a specific hour"
-  statement:
-      SELECT org.acme.Doctor 
-        FROM org.acme.Schedule
-          WHERE()
-        
+query availableDoctors { 
+  description: "Select all doctors available at required times" 
+  statement: SELECT org.acme.Schedule 
+  WHERE ( availability CONTAINS (hour == _$hour AND day == _$day ) ) 
 }
