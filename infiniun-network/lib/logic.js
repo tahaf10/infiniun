@@ -31,7 +31,9 @@ function addDoctor(newDoctor) {
       var factory = getFactory(); 
       var NS='org.acme';
       var patient = factory.newResource(NS,'Patient',newPatient.patient.patientID);
-      patient.contact = newPatient.patient.contact;
+      patient.family=factory.newRelationship(NS,'Family',newPatient.patient.family.familyID);
+
+      patient.relationship = newPatient.patient.relationship;
   
       return getParticipantRegistry('org.acme.Patient')
         .then(function(patientRegistry){
@@ -42,20 +44,21 @@ function addDoctor(newDoctor) {
 
   
   /**
-  *@param {org.acme.addPatientRelative} newRelative
+  *@param {org.acme.addFamily} newFamily
   *@transaction
   */
   
-  function addPatientRelative(newRelative){
+  function addFamily(newFamily){
       var factory = getFactory();
       var NS='org.acme';
   
-      var patientRelative=factory.newResource(NS,'PatientRelative',newRelative.patientRelative.patientRelativeID);
-      patientRelative.patient=factory.newRelationship(NS,'Patient',newRelative.patientRelative.patient.patientID);
+      var family=factory.newResource(NS,'Family',newFamily.family.familyID);
+      family.contact = newFamily.family.contact;
+      family.name = newFamily.family.name;
   
-      return getParticipantRegistry('org.acme.PatientRelative')
+      return getParticipantRegistry('org.acme.Family')
       .then(function(consultationDataRegistry){
-          consultationDataRegistry.addAll([patientRelative]);
+          consultationDataRegistry.addAll([family]);
       })
   }
   

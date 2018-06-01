@@ -1,12 +1,7 @@
 namespace org.acme
 
-participant Patient identified by patientID {
-  o String patientID
-  o String contact 
-  o String name
-}
-
 enum Relationship{
+  o SuperUser
   o Father
   o Mother
   o Sister
@@ -17,12 +12,17 @@ enum Relationship{
   o Daughter
 }
 
-participant PatientRelative identified by patientRelativeID{
-  o String patientRelativeID
-  o Relationship relationship
-  --> Patient patient
+participant Family identified by familyID{
+  o String familyID
+  o String contact 
+  o String name
 }
 
+participant Patient identified by patientID {
+  o String patientID
+  o Relationship relationship
+  --> Family family
+}
 
 participant Doctor identified by doctorID {
   o String doctorID
@@ -224,11 +224,11 @@ transaction addDoctor {
 
 transaction addPatient{
   o Patient patient
+  --> Family family
 }
 
-transaction addPatientRelative{
-  o PatientRelative patientRelative
-  --> Patient patient
+transaction addFamily{
+  o Family family
 }
 
 event ConsultationUpdated {
