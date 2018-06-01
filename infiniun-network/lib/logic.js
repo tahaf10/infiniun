@@ -32,7 +32,6 @@ function addDoctor(newDoctor) {
       var NS='org.acme';
       var patient = factory.newResource(NS,'Patient',newPatient.patient.patientID);
       patient.family=factory.newRelationship(NS,'Family',newPatient.patient.family.familyID);
-
       patient.relationship = newPatient.patient.relationship;
   
       return getParticipantRegistry('org.acme.Patient')
