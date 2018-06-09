@@ -17,6 +17,12 @@ rule NetworkAdminSystem {
     action: ALLOW
 }
 
+rule FamilyCreatePatient {
+    description: "Family can create patient participant"
+    participant: "org.acme.Family"
+    operation: CREATE
+    resource: "org.acme.Patient"
+}
 
 rule PatientConsultationACL {
     description: "Patients can read or delete their consultation Data"
