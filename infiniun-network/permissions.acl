@@ -22,13 +22,23 @@ rule FamilyCreatePatient {
     participant: "org.acme.Family"
     operation: CREATE
     resource: "org.acme.Patient"
+    action: ALLOW
 }
 
 rule PatientConsultationACL {
     description: "Patients can read or delete their consultation Data"
     participant(m): "org.acme.Patient"
-    operation: READ, DELETE
-    resource(v): "org.acme.ConsultationData"
+    operation: READ
+    resource(v): "org.acme.Consultation"
+    condition: (v.patient.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule PatientTreatmentACL {
+    description: "Patient can read a Treatment"
+    participant(m): "org.acme.Patient"
+    operation: READ
+    resource(v): "org.acme.Treatment"
     condition: (v.patient.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -37,7 +47,7 @@ rule DoctorCreateConsultationACL {
     description: "Doctor can create a consultation Data asset"
     participant: "org.acme.Doctor"
     operation: CREATE
-    resource: "org.acme.ConsultationData"
+    resource: "org.acme.Consultation"
     action: ALLOW
 }
 
@@ -45,7 +55,7 @@ rule DoctorReadOrUpdateConsultationACL {
     description: "Doctor can read a consultation which he is a part of"
     participant(m): "org.acme.Doctor"
     operation: READ, UPDATE
-    resource(v): "org.acme.ConsultationData"
+    resource(v): "org.acme.Consultation"
     condition: (v.doctor.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -54,7 +64,7 @@ rule DoctorCreateTreatmentACL {
     description: "Doctor can create a Treatment Data asset"
     participant: "org.acme.Doctor"
     operation: CREATE
-    resource: "org.acme.TreatmentData"
+    resource: "org.acme.Treatment"
     action: ALLOW
 }
 
@@ -62,7 +72,7 @@ rule DoctorReadOrUpdateTreatmentACL {
     description: "Doctor can read a consultation which he is a part of"
     participant(m): "org.acme.Doctor"
     operation: READ, UPDATE
-    resource(v): "org.acme.TreatmentData"
+    resource(v): "org.acme.Treatment"
     condition: (v.doctor.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -86,7 +96,7 @@ rule LabTestACL {
 }
 
 rule ReferHospitalACL {
-    description: "Rule to allow Pharmacies to access Patient's prescription"
+    description: "Rule to allow Hospital to access Patient's prescription"
     participant(m): "org.acme.Hospital"
     operation: READ
     resource(v): "org.acme.SharedHospital"
