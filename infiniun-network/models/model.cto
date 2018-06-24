@@ -1,54 +1,92 @@
 namespace org.acme
 
+enum Relationship{
+  o SuperUser
+  o Father
+  o Mother
+  o Sister
+  o Brother
+  o Wife
+  o Husband
+  o Son 
+  o Daughter
+}
+
+participant Family identified by familyID{
+  o String familyID
+  o String contact 
+  o String name
+}
+
 participant Patient identified by patientID {
   o String patientID
-  o String contact 
-}
-
-participant PatientRelative identified by patientRelativeID{
-  o String patientRelativeID
-  --> Patient patient
-}
-
-concept DoctorSchedule {
-o String[] day1 regex=/^[0-1]{1}$/
-o String[] day2 regex=/^[0-1]{1}$/
-o String[] day3 regex=/^[0-1]{1}$/
-o String[] day4 regex=/^[0-1]{1}$/
-o String[] day5 regex=/^[0-1]{1}$/
-o String[] day6 regex=/^[0-1]{1}$/
-o String[] day7 regex=/^[0-1]{1}$/
-o String[] day8 regex=/^[0-1]{1}$/
-o String[] day9 regex=/^[0-1]{1}$/
-o String[] day10 regex=/^[0-1]{1}$/
-o String[] day11 regex=/^[0-1]{1}$/
-o String[] day12 regex=/^[0-1]{1}$/
-o String[] day13 regex=/^[0-1]{1}$/
-o String[] day14 regex=/^[0-1]{1}$/
-o String[] day15 regex=/^[0-1]{1}$/
-o String[] day16 regex=/^[0-1]{1}$/
-o String[] day17 regex=/^[0-1]{1}$/
-o String[] day18 regex=/^[0-1]{1}$/
-o String[] day19 regex=/^[0-1]{1}$/
-o String[] day20 regex=/^[0-1]{1}$/
-o String[] day21 regex=/^[0-1]{1}$/
-o String[] day22 regex=/^[0-1]{1}$/
-o String[] day23 regex=/^[0-1]{1}$/
-o String[] day24 regex=/^[0-1]{1}$/
-o String[] day25 regex=/^[0-1]{1}$/
-o String[] day26 regex=/^[0-1]{1}$/
-o String[] day27 regex=/^[0-1]{1}$/
-o String[] day28 regex=/^[0-1]{1}$/
-o String[] day29 regex=/^[0-1]{1}$/
-o String[] day30 regex=/^[0-1]{1}$/
-o String[] day31 regex=/^[0-1]{1}$/
+  o Relationship relationship
+  --> Family family
 }
 
 participant Doctor identified by doctorID {
   o String doctorID
   o String contact 
-  o DoctorSchedule doctorSchedule
+  o String doctorName
+  o String description
+  }
 
+asset Schedule identified by scheduleID {
+ o String scheduleID
+ o Availability[] availability
+ --> Doctor doctor
+}
+  
+concept Availability {
+o WeekDay day 
+o Hours hour 
+}
+
+enum WeekDay {
+o MON
+o TUE
+o WED
+o THU
+o FRI
+o SAT
+o SUN
+}
+
+enum Hours {
+o H00
+o H01
+o H02
+o H03
+o H04
+o H05
+o H06
+o H07
+o H08
+o H09
+o H10
+o H11
+o H12
+o H13
+o H14
+o H15
+o H16
+o H17
+o H18
+o H19
+o H20
+o H21
+o H22
+o H23
+
+}
+  
+transaction Scheduler{
+  o Schedule schedule
+  --> Doctor docID
+}
+
+transaction GetAvailableDoctors{
+  o Availability availability
 }
 
 participant Lab identified by labID {
@@ -65,29 +103,41 @@ participant Pharmacy identified by pharmacyID {
   o String pharmacyID
   o String contact
   o String pharmacyMedDB
+  o String pharmacyName
 }
 
 asset TreatmentLabTest identified by treatmentLabTestID {
   o String treatmentLabTestID
-  o String testDetail
-  --> TreatmentData treatmentData
+  o String testName
+  o String testResult default = 'Not Updated'
+  --> Treatment treatment
 }
 
 asset SharedLabTest identified by sharedLabTestID{
   o String sharedLabTestID
-  o String stuff
+  o Boolean testCompleted default = false
   --> TreatmentLabTest treatmentLabTest 
   --> Lab lab 
 }
 
+concept Medicine {
+  o String name
+  o String mg
+  o String amount
+}
+
 asset TreatmentDrugs identified by treatmentDrugsID{
   o String treatmentDrugsID
-  o String drugDetail
-  --> TreatmentData treatmentData
+  o Medicine[] medicine 
+  --> Treatment treatment
 }
 
 asset SharedDrugs identified by sharedDrugID{
   o String sharedDrugID
+  o String availability default = 'Not Updated'
+  o String price default = 'Not Updated'
+  o Boolean orderCompleted default = false
+
   --> TreatmentDrugs treatmentDrugs 
   --> Pharmacy pharmacy
 }
@@ -95,28 +145,30 @@ asset SharedDrugs identified by sharedDrugID{
 asset HospitalTreatment identified by hospTreatmentID{
   o String hospTreatmentID
   o String stuff
-  --> TreatmentData treatmentData
+  --> Treatment treatment
 }
 
 asset SharedHospital identified by sharedHospitalID{
   o String sharedHospitalID
-  --> HospitalTreatment hospitalTreatment
-  --> Hospital hospital
+  --> Treatment treatment
+  --> Hospital hospital 
 }
 
-asset TreatmentData identified by treatmentID{
+asset Treatment identified by treatmentID{
 	o String treatmentID
   o String procedure
   o Boolean hospitalVisitNeeded
   o Boolean medRequired
   o Boolean labTestRequired
 
-  --> ConsultationData consultationData
+  --> Consultation consultation
 }
 
-asset ConsultationData identified by consultationID {
+asset Consultation identified by consultationID {
   o String consultationID
-  o String illnessDescription
+  o String illnessDescription default = 'Not updated'
+  o String message default = 'Not Updated'
+  o Boolean consultationCompleted default = false
 
   --> Patient patient
   --> Doctor doctor
@@ -124,22 +176,46 @@ asset ConsultationData identified by consultationID {
 
 transaction LabTest {
   o SharedLabTest sharedLabTest
+  --> TreatmentLabTest treatmentLabTest
+  --> Lab lab
 }
 
 transaction ReferHospital {
   o SharedHospital sharedHospital
 }
 
-transaction Consultation {
-  o ConsultationData consultationData
-  o TreatmentData treatmentData
+transaction RequestConsultation {
+  --> Patient patient
+
+}
+
+transaction StartConsultation {
+  o Consultation consultation
+  --> Patient patient
+  --> Doctor doctor
+}
+
+concept ConsultationDetails{
+  o String illnessDescription
+  o String message
+}
+
+transaction EndConsultation {
+  o ConsultationDetails consultationDetails
+  o Treatment treatment
   o TreatmentDrugs treatmentDrugs optional
   o TreatmentLabTest treatmentLabTest optional 
   o HospitalTreatment hospitalTreatment optional
+  --> Consultation consultation
+  --> Patient patient
+  --> Doctor doctor
+
 }
 
 transaction GetDrugs {
   o SharedDrugs sharedDrugs
+  --> TreatmentDrugs treatmentDrugs
+  --> Pharmacy pharmacy
 }
 
 transaction addDoctor {
@@ -148,20 +224,21 @@ transaction addDoctor {
 
 transaction addPatient{
   o Patient patient
+  --> Family family
 }
 
-transaction addHospital{
-  o Hospital hospital
+transaction addFamily{
+  o Family family
 }
 
-transaction addLab {
-  o Lab lab
+event ConsultationUpdated {
+  --> Consultation consultation
 }
 
-transaction addPharmacy {
-  o Pharmacy pharmacy
+event TreatmentUpdated {
+  --> Treatment treatment
 }
 
-transaction addPatientRelative{
-  o PatientRelative patientRelative
+event newSharedDrug{
+  --> SharedDrugs sharedDrugs
 }
