@@ -31,7 +31,8 @@ function addDoctor(newDoctor) {
       var factory = getFactory(); 
       var NS='org.acme';
       var patient = factory.newResource(NS,'Patient',newPatient.patient.patientID);
-      patient.contact = newPatient.patient.contact;
+      patient.family=factory.newRelationship(NS,'Family',newPatient.patient.family.familyID);
+      patient.relationship = newPatient.patient.relationship;
   
       return getParticipantRegistry('org.acme.Patient')
         .then(function(patientRegistry){
@@ -39,76 +40,24 @@ function addDoctor(newDoctor) {
         })
   }
   
+
+  
   /**
-  *@param {org.acme.addHospital} newHospital
+  *@param {org.acme.addFamily} newFamily
   *@transaction
   */
   
-  function addHospital(newHospital) {
-    
-      var factory = getFactory(); 
-      var NS='org.acme';
-      var hospital = factory.newResource(NS,'Hospital',newHospital.hospital.hospitalID);
-      hospital.contact = newHospital.hospital.contact;
-    
-      return getParticipantRegistry('org.acme.Hospital')
-        .then(function(hospitalRegistry){
-          hospitalRegistry.addAll([hospital]);
-    })
-  }
-  
-  /**
-  *@param {org.acme.addLab} newLab
-  *@transaction
-  */
-  
-  function addLab(newLab) {
-    
-      var factory = getFactory(); 
-      var NS='org.acme';
-      var lab = factory.newResource(NS,'Lab',newLab.lab.labID);
-      lab.contact = newLab.lab.contact;
-    
-    return getParticipantRegistry('org.acme.Lab')
-        .then(function(labRegistry){
-          labRegistry.addAll([lab]);
-    })
-  }
-  
-  /**
-  *@param {org.acme.addPharmacy} newPharmacy
-  *@transaction
-  */
-  
-  function addPharmacy(newPharmacy) {
-    
-    var factory = getFactory(); 
-    var NS='org.acme';
-    var pharmacy = factory.newResource(NS,'Pharmacy',newPharmacy.pharmacy.pharmacyID);
-    pharmacy.contact = newPharmacy.pharmacy.contact;
-  
-    
-    return getParticipantRegistry('org.acme.Doctor')
-        .then(function(doctorRegistry){
-          doctorRegistry.addAll([doctor]);
-    })
-  }
-  
-  /**
-  *@param {org.acme.addPatientRelative} newRelative
-  *@transaction
-  */
-  
-  function addPatientRelative(newRelative){
+  function addFamily(newFamily){
       var factory = getFactory();
       var NS='org.acme';
   
-      var patientRelative=factory.newResource(NS,'PatientRelative',newRelative.patientRelative.patientRelativeID);
-      patientRelative.patient=factory.newRelationship(NS,'Patient',newRelative.patientRelative.patient);
+      var family=factory.newResource(NS,'Family',newFamily.family.familyID);
+      family.contact = newFamily.family.contact;
+      family.name = newFamily.family.name;
   
-      return getParticipantRegistry('org.acme.PatientRelative')
+      return getParticipantRegistry('org.acme.Family')
       .then(function(consultationDataRegistry){
-          consultationDataRegistry.addAll([patientRelative]);
+          consultationDataRegistry.addAll([family]);
       })
   }
   
@@ -140,18 +89,10 @@ function addDoctor(newDoctor) {
     */
   
     function labTest(test) {
-        var factory = getFactory();
-        var NS = 'org.acme';
-  
-        var sharedLabTest = factory.newResource(NS,'SharedLabTest',test.sharedLabTest.sharedLabTestID);
-        sharedLabTest.treatmentLabTest = factory.newRelationship(NS,'TreatmentLabTest',test.sharedLabTest.treatmentLabTest);
-        sharedLabTest.lab = factory.newRelationship(NS,'Lab',test.sharedLabTest.lab);
-  
-        
-        
+
         return getAssetRegistry('org.acme.SharedLabTest')
           .then(function(sharedLabTestRegistry){
-              sharedLabTestRegistry.addAll([sharedLabTest]);
+              sharedLabTestRegistry.addAll([test.sharedLabTest]);
           })
     }
   
@@ -161,91 +102,165 @@ function addDoctor(newDoctor) {
    */
   
    function getDrugs(drugs){
-      var factory = getFactory(); 
-      var NS='org.acme';
-  
-      var sharedDrugs = factory.newResource(NS,'SharedDrugs',drugs.sharedDrugs.sharedDrugID);
-  
-      sharedDrugs.treatmentDrugs = factory.newRelationship(NS,'TreatmentDrugs',drugs.sharedDrugs.treatmentDrugs);
-      sharedDrugs.pharmacy = factory.newRelationship(NS,'Pharmacy',drugs.sharedDrugs.pharmacy);
-  
-  
-      if(sharedDrugs.treatmentDrugs.treatmentDrugsID == sharedDrugs.pharmacy.pharmacyMedDB){
-  
-      }
   
       return getAssetRegistry('org.acme.SharedDrugs')
           .then(function(sharedDrugsRegistry){
-              sharedDrugsRegistry.addAll([sharedDrugs]);
-          })
+              sharedDrugsRegistry.addAll([drugs.sharedDrugs]);
+            
+            })
       
    }
+
+   
   
+
+/**
+* @param {org.acme.GetAvailableDoctors} sc
+* @transaction
+ */
+  
+function getAvailableDoctors(sc) {
+    
+    return query('availableDoctors', {"hour" : sc.availability.hour , "day" : sc.availability.day})
+    .then(function(results){
+        var availablDocs = [];
+
+        for (var n = 0; n < results.length; n++) {
+            var schedule_asset = results[n];
+            availableDocs[n] = schedule_asset.doctor.getIdentifier();
+        }
+
+        return availableDocs;
+    })
+
+}
+
+/**
+ * Sample transaction processor function.
+ * @param {org.acme.Scheduler} sc The sample transaction instance.
+ * @transaction
+ */
+function scheduler(sc) {  // eslint-disable-line no-unused-vars
+    // Get the asset registry for the asset.
+  
+  return getAssetRegistry('org.acme.Schedule')
+    .then(function(scheduleRegistry){
+  
+            scheduleRegistry.addAll([sc.schedule]);
+    })
+  
+}
+ 
+
+
+    /**
+    * @param {org.acme.StartConsultation} newConsultation
+    * @transaction
+    */
+  
+   function startConsultation(newConsultation) {
+    var factory = getFactory(); 
+    var NS='org.acme';
+  
+    var consultation = factory.newResource(NS,'Consultation',newConsultation.consultation.consultationID);
+    
+    consultation.patient = factory.newRelationship(NS,'Patient',newConsultation.consultation.patient.patientID);
+    consultation.doctor = factory.newRelationship(NS,'Doctor',newConsultation.consultation.doctor.doctorID);
+
+
+
+    return getAssetRegistry('org.acme.Consultation')
+    .then(function(consultationDataRegistry){
+        consultationDataRegistry.addAll([consultation]);
+    })
+
+}
+
+
   /**
-  * @param {org.acme.Consultation} newConsultation
+  * @param {org.acme.EndConsultation} newConsultation
   * @transaction
   */
   
-  function consultation (newConsultation){
+  function endConsultation (newConsultation){
       var factory = getFactory(); 
       var NS='org.acme';
     
-      var consultationData = factory.newResource(NS,'ConsultationData',newConsultation.consultationData.consultationID);
-      consultationData.illnessDescription= newConsultation.consultationData.illnessDescription;
-    
-      consultationData.patient = factory.newRelationship(NS,'Patient',newConsultation.consultationData.patient);
-      consultationData.doctor = factory.newRelationship(NS,'Doctor',newConsultation.consultationData.doctor);
+
+      var treatment = factory.newResource(NS,'Treatment',newConsultation.treatment.treatmentID);
+      treatment.procedure = newConsultation.treatment.procedure;
+      treatment.hospitalVisitNeeded = newConsultation.treatment.hospitalVisitNeeded;
+      treatment.medRequired = newConsultation.treatment.medRequired;
+      treatment.labTestRequired = newConsultation.treatment.labTestRequired;
+      treatment.consultation = factory.newRelationship(NS,'Consultation',newConsultation.consultation.consultationID);
   
-      var treatmentData = factory.newResource(NS,'TreatmentData',newConsultation.treatmentData.treatmentID);
-      treatmentData.procedure = newConsultation.treatmentData.procedure;
-      treatmentData.hospitalVisitNeeded = newConsultation.treatmentData.hospitalVisitNeeded;
-      treatmentData.medRequired = newConsultation.treatmentData.medRequired;
-      treatmentData.labTestRequired = newConsultation.treatmentData.labTestRequired;
-      treatmentData.consultationData = factory.newRelationship(NS,'ConsultationData',consultationData.consultationID);
-  
-      if (treatmentData.hospitalVisitNeeded == true) {
+      var event1 = getFactory().newEvent(NS,'ConsultationUpdated');
+      event1.consultation = newConsultation.consultation;
+
+      var event2 = getFactory().newEvent(NS,'TreatmentUpdated');
+      event2.treatment = newConsultation.treatment;
+
+      if (treatment.hospitalVisitNeeded == true) {
           var hospitalTreatment = factory.newResource(NS,'HospitalTreatment',newConsultation.hospitalTreatment.hospTreatmentID);
           hospitalTreatment.stuff = newConsultation.hospitalTreatment.stuff;
-          hospitalTreatment.treatmentData = factory.newRelationship(NS,'TreatmentData',newConsultation.treatmentData.treatmentID);
+          hospitalTreatment.treatment = factory.newRelationship(NS,'Treatment',newConsultation.treatment.treatmentID);
   
-          return getAssetRegistry('org.acme.ConsultationData')
-          .then(function(consultationDataRegistry){
-              consultationDataRegistry.addAll([consultationData]);
-          })
-          .then(function(){
-              return getAssetRegistry('org.acme.TreatmentData')
+        return getAssetRegistry('org.acme.Consultation')
+            .then(function(consultationDataRegistry){
+                newConsultation.consultation.illnessDescription = newConsultation.consultationDetails.illnessDescription;
+                newConsultation.consultation.message = newConsultation.consultationDetails.message;
+                newConsultation.consultation.consultationCompleted = true;
+                consultationDataRegistry.update(newConsultation.consultation);
+                emit(event1);
+
+            })
+            .then(function(){
+
+            
+              return getAssetRegistry('org.acme.Treatment')
           .then(function(treatmentDataRegistry){
-              treatmentDataRegistry.addAll([treatmentData]);
+              treatmentDataRegistry.addAll([treatment]);
+              emit(event2);
           })
           })
           .then(function(){
               return getAssetRegistry('org.acme.HospitalTreatment')
           .then(function(hospTreatmentRegistry){
               hospTreatmentRegistry.addAll([hospitalTreatment]);
-          })    
+            
           })
+          })
+
           
       }
   
-      if (treatmentData.medRequired==true && treatmentData.labTestRequired==true){
+      if (treatment.medRequired==true && treatment.labTestRequired==true){
           var treatmentDrugs = factory.newResource(NS,'TreatmentDrugs',newConsultation.treatmentDrugs.treatmentDrugsID);
           treatmentDrugs.drugDetail = newConsultation.treatmentDrugs.drugDetail;
-          treatmentDrugs.treatmentData = factory.newRelationship(NS,'TreatmentData',newConsultation.treatmentData.treatmentID);
+          treatmentDrugs.treatment = factory.newRelationship(NS,'Treatment',newConsultation.treatment.treatmentID);
   
           var treatmentLabTest = factory.newResource(NS,'TreatmentLabTest',newConsultation.treatmentLabTest.treatmentLabTestID);
           treatmentLabTest.testDetail = newConsultation.treatmentLabTest.testDetail;
-          treatmentLabTest.treatmentData = factory.newRelationship(NS,'TreatmentData',newConsultation.treatmentData.treatmentID);
+          treatmentLabTest.treatment = factory.newRelationship(NS,'Treatment',newConsultation.treatment.treatmentID);
   
-          return getAssetRegistry('org.acme.ConsultationData')
+
+          return getAssetRegistry('org.acme.Consultation')
           .then(function(consultationDataRegistry){
-              consultationDataRegistry.addAll([consultationData]);
+              newConsultation.consultation.illnessDescription = newConsultation.consultationDetails.illnessDescription;
+              newConsultation.consultation.message = newConsultation.consultationDetails.message;
+              newConsultation.consultation.consultationCompletedd = true;
+              consultationDataRegistry.update(newConsultation.consultation);
+              emit(event1);
           })
           .then(function(){
-              return getAssetRegistry('org.acme.TreatmentData')
+
+          
+        return getAssetRegistry('org.acme.Treatment')
           .then(function(treatmentDataRegistry){
-              treatmentDataRegistry.addAll([treatmentData]);
+              treatmentDataRegistry.addAll([treatment]);
+              emit(event2);
           })
-          })
+        })
           .then(function(){
               return getAssetRegistry('org.acme.TreatmentDrugs')
           .then(function(treatmentDrugsRegistry){
@@ -260,46 +275,63 @@ function addDoctor(newDoctor) {
           })
       }
   
-      if (treatmentData.medRequired == true){
+      if (treatment.medRequired == true){
           
-          var treatmentDrugs = factory.newResource(NS,'TreatmentDrugs',newConsultation.treatmentDrugs.treatmentDrugsID);
+         /* var treatmentDrugs = factory.newResource(NS,'TreatmentDrugs',newConsultation.treatmentDrugs.treatmentDrugsID);
           treatmentDrugs.drugDetail = newConsultation.treatmentDrugs.drugDetail;
-          treatmentDrugs.treatmentData = factory.newRelationship(NS,'TreatmentData',newConsultation.treatmentData.treatmentID);
-  
-          return getAssetRegistry('org.acme.ConsultationData')
+          treatmentDrugs.treatment = factory.newRelationship(NS,'Treatment',newConsultation.treatment.treatmentID);
+        */
+          return getAssetRegistry('org.acme.Consultation')
           .then(function(consultationDataRegistry){
-              consultationDataRegistry.addAll([consultationData]);
+              newConsultation.consultation.illnessDescription = newConsultation.consultationDetails.illnessDescription;
+              newConsultation.consultation.message = newConsultation.consultationDetails.message;
+              newConsultation.consultation.consultationCompletedd = true;
+              consultationDataRegistry.update(newConsultation.consultation);
+              emit(event1);
+
           })
           .then(function(){
-              return getAssetRegistry('org.acme.TreatmentData')
+
+          
+            return getAssetRegistry('org.acme.Treatment')
           .then(function(treatmentDataRegistry){
-              treatmentDataRegistry.addAll([treatmentData]);
+              treatmentDataRegistry.addAll([treatment]);
+              emit (event2);
           })
-          })
+        })
           .then(function(){
               return getAssetRegistry('org.acme.TreatmentDrugs')
           .then(function(treatmentDrugsRegistry){
-              treatmentDrugsRegistry.addAll([treatmentDrugs]);
+              treatmentDrugsRegistry.addAll([newConsultation.treatmentDrugs]);
           })    
           })
   
       }
   
-      if (treatmentData.labTestRequired == true) {
+      if (treatment.labTestRequired == true) {
           var treatmentLabTest = factory.newResource(NS,'TreatmentLabTest',newConsultation.treatmentLabTest.treatmentLabTestID);
           treatmentLabTest.testDetail = newConsultation.treatmentLabTest.testDetail;
-          treatmentLabTest.treatmentData = factory.newRelationship(NS,'TreatmentData',newConsultation.treatmentData.treatmentID);
+          treatmentLabTest.treatment = factory.newRelationship(NS,'Treatment',newConsultation.treatment.treatmentID);
   
-          return getAssetRegistry('org.acme.ConsultationData')
+
+          return getAssetRegistry('org.acme.Consultation')
           .then(function(consultationDataRegistry){
-              consultationDataRegistry.addAll([consultationData]);
+              newConsultation.consultation.illnessDescription = newConsultation.consultationDetails.illnessDescription;
+              newConsultation.consultation.message = newConsultation.consultationDetails.message;
+              newConsultation.consultation.consultationCompletedd = true;
+              consultationDataRegistry.update(newConsultation.consultation);
+              emit(event1);
+
           })
           .then(function(){
-              return getAssetRegistry('org.acme.TreatmentData')
+
+          
+        return getAssetRegistry('org.acme.Treatment')
           .then(function(treatmentDataRegistry){
-              treatmentDataRegistry.addAll([treatmentData]);
+              treatmentDataRegistry.addAll([treatment]);
+              emit(event2);
           })
-          })
+        })
           .then(function(){
               return getAssetRegistry('org.acme.TreatmentLabTest')
           .then(function(treatmentLabTestRegistry){
@@ -310,16 +342,24 @@ function addDoctor(newDoctor) {
      
   
   
-  
-      return getAssetRegistry('org.acme.ConsultationData')
-          .then(function(consultationDataRegistry){
-              consultationDataRegistry.addAll([consultationData]);
+      return getAssetRegistry('org.acme.Consultation')
+      .then(function(consultationDataRegistry){
+          newConsultation.consultation.illnessDescription = newConsultation.consultationDetails.illnessDescription;
+          newConsultation.consultation.message = newConsultation.consultationDetails.message;
+          newConsultation.consultation.consultationCompleted = true;
+          consultationDataRegistry.update(newConsultation.consultation);
+          emit(event1);
+
+      })
+      .then(function(){
+
+      
+
+    return getAssetRegistry('org.acme.Treatment')
+        .then(function(treatmentDataRegistry){
+              treatmentDataRegistry.addAll([treatment]);
+              emit(event2);
           })
-          .then(function(){
-              return getAssetRegistry('org.acme.TreatmentData')
-          .then(function(treatmentDataRegistry){
-              treatmentDataRegistry.addAll([treatmentData]);
-          })
-          })
+        })
           
   }

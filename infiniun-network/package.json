@@ -1,8 +1,9 @@
 {
   "name": "infiniun-network",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Digital Healthcare",
   "scripts": {
+    "prepublish": "composer archive create -t dir -n . -a infiniun-network.bna && composer network install -a infiniun-network.bna -c PeerAdmin@hlfv1",
     "test": "mocha --recursive"
   },
   "author": "Taha",
