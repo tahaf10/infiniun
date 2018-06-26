@@ -1,6 +1,6 @@
 /*
 */
-
+/*
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
     participant: "org.hyperledger.composer.system.NetworkAdmin"
@@ -16,13 +16,31 @@ rule NetworkAdminSystem {
     resource: "org.hyperledger.composer.system.**"
     action: ALLOW
 }
+*/
+rule PatientACL {
+    description: "Patients can do anything with their Data"
+    participant(m): "org.acme.Patient"
+    operation: ALL
+    resource(v): "org.acme.Patient"
+    condition: (v.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule DoctorACL {
+    description: "Doctors can do anything with their Data"
+    participant(m): "org.acme.Doctor"
+    operation: ALL
+    resource(v): "org.acme.Doctor"
+    condition: (v.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
 
 
 rule PatientConsultationACL {
     description: "Patients can read or delete their consultation Data"
     participant(m): "org.acme.Patient"
     operation: READ, DELETE
-    resource(v): "org.acme.ConsultationData"
+    resource(v): "org.acme.Consultation"
     condition: (v.patient.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -31,7 +49,7 @@ rule DoctorCreateConsultationACL {
     description: "Doctor can create a consultation Data asset"
     participant: "org.acme.Doctor"
     operation: CREATE
-    resource: "org.acme.ConsultationData"
+    resource: "org.acme.Consultation"
     action: ALLOW
 }
 
@@ -39,7 +57,7 @@ rule DoctorReadOrUpdateConsultationACL {
     description: "Doctor can read a consultation which he is a part of"
     participant(m): "org.acme.Doctor"
     operation: READ, UPDATE
-    resource(v): "org.acme.ConsultationData"
+    resource(v): "org.acme.Consultation"
     condition: (v.doctor.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -48,7 +66,7 @@ rule DoctorCreateTreatmentACL {
     description: "Doctor can create a Treatment Data asset"
     participant: "org.acme.Doctor"
     operation: CREATE
-    resource: "org.acme.TreatmentData"
+    resource: "org.acme.Treatment"
     action: ALLOW
 }
 
@@ -56,7 +74,7 @@ rule DoctorReadOrUpdateTreatmentACL {
     description: "Doctor can read a consultation which he is a part of"
     participant(m): "org.acme.Doctor"
     operation: READ, UPDATE
-    resource(v): "org.acme.TreatmentData"
+    resource(v): "org.acme.Treatment"
     condition: (v.doctor.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -88,10 +106,35 @@ rule ReferHospitalACL {
     action: ALLOW
 }
 
-rule DenyALL {
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+/*rule DenyALL {
     description: "Deny All resources to everyone"
     participant: "org.acme.*"
     operation: ALL
     resource: "org.hyperledger.composer.system.**"
     action: DENY
 }
+*/
