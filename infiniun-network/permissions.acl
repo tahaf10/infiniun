@@ -1,5 +1,12 @@
 /*
 */
+rule SystemACL {
+  description: "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
 
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
@@ -58,6 +65,15 @@ rule DoctorReadOrUpdateConsultationACL {
     resource(v): "org.acme.Consultation"
     condition: (v.doctor.getIdentifier() == m.getIdentifier())
     action: ALLOW
+}
+
+rule DoctorReadPreviousConsultationACL {
+  description: "Doctor can read previous consultation of Patient, which Patient has given access too"
+  participant(m): "org.acme.Doctor"
+  operation: READ
+  resource(v): "org.acme.Consultation"
+  condition: (v.consultationAccess == m.getIdentifier() )
+  action: ALLOW
 }
 
 rule DoctorCreateTreatmentACL {

@@ -169,6 +169,7 @@ asset Consultation identified by consultationID {
   o String illnessDescription default = 'Not updated'
   o String message default = 'Not Updated'
   o Boolean consultationCompleted default = false
+  o String consultationAccess default = 'None'
 
   --> Patient patient
   --> Doctor doctor
@@ -212,7 +213,7 @@ transaction EndConsultation {
 
 }
 
-transaction GetDrugs {
+transaction ShareDrugswithPharmacy {
   o SharedDrugs sharedDrugs
   --> TreatmentDrugs treatmentDrugs
   --> Pharmacy pharmacy
@@ -229,6 +230,11 @@ transaction addPatient{
 
 transaction addFamily{
   o Family family
+}
+
+transaction PatientAllowAccess{
+  --> Consultation consultation
+  --> Doctor doctor
 }
 
 event ConsultationUpdated {

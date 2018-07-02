@@ -12,7 +12,9 @@ function addDoctor(newDoctor) {
     var NS='org.acme';
     var doctor = factory.newResource(NS,'Doctor',newDoctor.doctor.doctorID);
     doctor.contact = newDoctor.doctor.contact;
-    doctor.doctorSchedule = newDoctor.doctor.doctorSchedule;
+    doctor.doctorName = newDoctor.doctor.doctorName;
+    doctor.description = newDoctor.doctor.description;
+    //doctor.doctorSchedule = newDoctor.doctor.doctorSchedule;
   
     
     return getParticipantRegistry('org.acme.Doctor')
@@ -97,11 +99,11 @@ function addDoctor(newDoctor) {
     }
   
   /**
-   * @param {org.acme.GetDrugs} drugs
+   * @param {org.acme.ShareDrugswithPharmacy} drugs
    * @transaction
    */
   
-   function getDrugs(drugs){
+   function ShareDrugswithPharmacy(drugs){
   
       return getAssetRegistry('org.acme.SharedDrugs')
           .then(function(sharedDrugsRegistry){
@@ -150,7 +152,6 @@ function scheduler(sc) {  // eslint-disable-line no-unused-vars
     })
   
 }
- 
 
 
     /**
@@ -363,3 +364,24 @@ function scheduler(sc) {  // eslint-disable-line no-unused-vars
         })
           
   }
+
+  /**
+    * @param {org.acme.PatientAllowAccess} tempConsultation
+    * @transaction
+    */
+  
+   function PatientAllowAccess(tempConsultation) {
+    var factory = getFactory();
+    var NS='org.acme';
+    
+    //var consult = factory.newRelationship(NS,'Consultation',tempConsultation.consultation.consultationID);
+
+    tempConsultation.consultation.consultationAccess = tempConsultation.doctor.doctorID;
+
+
+    return getAssetRegistry('org.acme.Consultation')
+     .then(function(consultationDataRegistry){
+
+     consultationDataRegistry.update(tempConsultation.consultation);
+ })
+}
