@@ -21,13 +21,13 @@ function addDoctor(newDoctor) {
         .then(function(doctorRegistry){
           doctorRegistry.addAll([doctor]);
     })
-  }
-  
-  /** 
-  @param {org.acme.addPatient} newPatient
-  @transaction
-  */
-  
+}
+
+/** 
+ @param {org.acme.addPatient} newPatient
+@transaction
+*/
+
   function addPatient (newPatient) {
   
       var factory = getFactory(); 
@@ -112,9 +112,23 @@ function addDoctor(newDoctor) {
             })
       
    }
-
+/** 
+ * @param {org.acme.ShareDrugsPharmacyUpdate} drugs
+ * @transaction
+*/
    
-  
+  function ShareDrugsPharmacyUpdate(drugs) {
+    var factory = getFactory();
+    var NS='org.acme';
+    
+    return getAssetRegistry('org.acme.SharedDrugs')
+    .then(function(sharedDrugsRegistry){
+        drugs.sharedDrugs.availability = drugs.PharmacyUpdate.availability;
+        drugs.sharedDrugs.price = drugs.PharmacyUpdate.price;
+        drugs.sharedDrugs.orderCompleted = true;
+        sharedDrugsRegistry.update(drugs.sharedDrugs);
+  })
+  }
 
 /**
 * @param {org.acme.GetAvailableDoctors} sc
