@@ -35,6 +35,13 @@ rule DoctorACL {
     action: ALLOW
 }
 
+rule startConsultationACL {
+    description: "Patients can start consultation"
+    participant: "org.acme.Patient"
+    operation: ALL
+    resource: "org.acme.StartConsultation"
+    action: ALLOW
+}
 
 rule PatientConsultationACL {
     description: "Patients can read or delete their consultation Data"
