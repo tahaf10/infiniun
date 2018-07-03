@@ -1,5 +1,6 @@
 /*
 */
+/*
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
     participant: "org.hyperledger.composer.system.NetworkAdmin"
@@ -34,28 +35,17 @@ rule DoctorACL {
     action: ALLOW
 }
 
-rule FamilyCreatePatient {
-    description: "Family can create patient participant"
-    participant: "org.acme.Family"
-    operation: CREATE
-    resource: "org.acme.Patient"
+rule startConsultationACL {
+    description: "Patients can start consultation"
+    participant: "org.acme.Patient"
+    operation: ALL
+    resource: "org.acme.StartConsultation"
     action: ALLOW
 }
 
 rule PatientConsultationACL {
     description: "Patients can read or delete their consultation Data"
     participant(m): "org.acme.Patient"
-    operation: READ
-    resource(v): "org.acme.Consultation"
-    condition: (v.patient.getIdentifier() == m.getIdentifier())
-    action: ALLOW
-}
-
-rule PatientTreatmentACL {
-    description: "Patient can read a Treatment"
-    participant(m): "org.acme.Patient"
-    operation: READ
-    resource(v): "org.acme.Treatment"
     operation: READ, DELETE
     resource(v): "org.acme.Consultation"
     condition: (v.patient.getIdentifier() == m.getIdentifier())
@@ -77,15 +67,6 @@ rule DoctorReadOrUpdateConsultationACL {
     resource(v): "org.acme.Consultation"
     condition: (v.doctor.getIdentifier() == m.getIdentifier())
     action: ALLOW
-}
-
-rule DoctorReadPreviousConsultationACL {
-  description: "Doctor can read previous consultation of Patient, which Patient has given access too"
-  participant(m): "org.acme.Doctor"
-  operation: READ
-  resource(v): "org.acme.Consultation"
-  condition: (v.consultationAccess == m.getIdentifier() )
-  action: ALLOW
 }
 
 rule DoctorCreateTreatmentACL {
@@ -124,7 +105,7 @@ rule LabTestACL {
 }
 
 rule ReferHospitalACL {
-    description: "Rule to allow Hospital to access Patient's prescription"
+    description: "Rule to allow Pharmacies to access Patient's prescription"
     participant(m): "org.acme.Hospital"
     operation: READ
     resource(v): "org.acme.SharedHospital"

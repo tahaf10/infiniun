@@ -1,7 +1,12 @@
 namespace org.acme
 
+participant Patient identified by patientID {
+  o String patientID
+  o String contact 
+  o String name
+}
+
 enum Relationship{
-  o SuperUser
   o Father
   o Mother
   o Sister
@@ -12,17 +17,12 @@ enum Relationship{
   o Daughter
 }
 
-participant Family identified by familyID{
-  o String familyID
-  o String contact 
-  o String name
+participant PatientRelative identified by patientRelativeID{
+  o String patientRelativeID
+  o Relationship relationship
+  --> Patient patient
 }
 
-participant Patient identified by patientID {
-  o String patientID
-  o Relationship relationship
-  --> Family family
-}
 
 participant Doctor identified by doctorID {
   o String doctorID
@@ -143,11 +143,6 @@ asset SharedDrugs identified by sharedDrugID{
   --> Pharmacy pharmacy
 }
 
-concept PharmacyUpdate{
-  o String availability default = 'Not Updated'
-  o String price default = 'Not Updated'
-}
-
 asset HospitalTreatment identified by hospTreatmentID{
   o String hospTreatmentID
   o String stuff
@@ -172,10 +167,9 @@ asset Treatment identified by treatmentID{
 
 asset Consultation identified by consultationID {
   o String consultationID
-  o String illnessDescription default = 'Not updated'
+  o String illnessDescription 
   o String message default = 'Not Updated'
   o Boolean consultationCompleted default = false
-  o String consultationAccess default = 'None'
 
   --> Patient patient
   --> Doctor doctor
@@ -225,10 +219,6 @@ transaction ShareDrugswithPharmacy {
   --> Pharmacy pharmacy
 }
 
-transaction ShareDrugsPharmacyUpdate {
-  --> SharedDrugs sharedDrugs
-  o PharmacyUpdate pharmacyUpdate
-}
 
 transaction addDoctor {
   o Doctor doctor
@@ -236,16 +226,11 @@ transaction addDoctor {
 
 transaction addPatient{
   o Patient patient
-  --> Family family
 }
 
-transaction addFamily{
-  o Family family
-}
-
-transaction PatientAllowAccess{
-  --> Consultation consultation
-  --> Doctor doctor
+transaction addPatientRelative{
+  o PatientRelative patientRelative
+  --> Patient patient
 }
 
 event ConsultationUpdated {
