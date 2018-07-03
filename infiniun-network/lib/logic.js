@@ -142,8 +142,7 @@ function getAvailableDoctors(sc) {
         var availablDocs = [];
 
         for (var n = 0; n < results.length; n++) {
-            var schedule_asset = results[n];
-            availableDocs[n] = schedule_asset.doctor.getIdentifier();
+            availableDocs.push(results[n].doctor.getIdentifier());
         }
 
         return availableDocs;
@@ -163,6 +162,13 @@ function scheduler(sc) {  // eslint-disable-line no-unused-vars
     .then(function(scheduleRegistry){
   
             scheduleRegistry.addAll([sc.schedule]);
+    })
+    .then(function(){
+        return getParticipantRegistry('org.acme.Doctor')
+        .then(function(doctorRegistry){
+            sc.doctor.schedule = sc.schedule;
+            doctorRegistry.update(sc.doctor);
+        })
     })
   
 }
@@ -298,11 +304,11 @@ function scheduler(sc) {  // eslint-disable-line no-unused-vars
         */
           return getAssetRegistry('org.acme.Consultation')
           .then(function(consultationDataRegistry){
-              newConsultation.consultation.illnessDescription = newConsultation.consultationDetails.illnessDescription;
-              newConsultation.consultation.message = newConsultation.consultationDetails.message;
-              newConsultation.consultation.consultationCompletedd = true;
-              consultationDataRegistry.update(newConsultation.consultation);
-              emit(event1);
+            newConsultation.consultation.illnessDescription = newConsultation.consultationDetails.illnessDescription;
+            newConsultation.consultation.message = newConsultation.consultationDetails.message;
+            newConsultation.consultation.consultationCompleted = true;
+            consultationDataRegistry.update(newConsultation.consultation);
+            emit(event1);
 
           })
           .then(function(){

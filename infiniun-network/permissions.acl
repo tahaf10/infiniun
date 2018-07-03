@@ -1,13 +1,5 @@
 /*
 */
-rule SystemACL {
-  description: "System ACL to permit all access"
-  participant: "ANY"
-  operation: ALL
-  resource: "org.hyperledger.composer.system.**"
-  action: ALLOW
-}
-
 rule NetworkAdminUser {
     description: "Grant business network administrators full access to user resources"
     participant: "org.hyperledger.composer.system.NetworkAdmin"
@@ -21,6 +13,24 @@ rule NetworkAdminSystem {
     participant: "org.hyperledger.composer.system.NetworkAdmin"
     operation: ALL
     resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+*/
+rule PatientACL {
+    description: "Patients can do anything with their Data"
+    participant(m): "org.acme.Patient"
+    operation: ALL
+    resource(v): "org.acme.Patient"
+    condition: (v.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule DoctorACL {
+    description: "Doctors can do anything with their Data"
+    participant(m): "org.acme.Doctor"
+    operation: ALL
+    resource(v): "org.acme.Doctor"
+    condition: (v.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
 
@@ -46,6 +56,8 @@ rule PatientTreatmentACL {
     participant(m): "org.acme.Patient"
     operation: READ
     resource(v): "org.acme.Treatment"
+    operation: READ, DELETE
+    resource(v): "org.acme.Consultation"
     condition: (v.patient.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -120,10 +132,35 @@ rule ReferHospitalACL {
     action: ALLOW
 }
 
-rule DenyALL {
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+/*rule DenyALL {
     description: "Deny All resources to everyone"
     participant: "org.acme.*"
     operation: ALL
     resource: "org.hyperledger.composer.system.**"
     action: DENY
 }
+*/

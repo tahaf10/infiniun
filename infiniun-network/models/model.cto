@@ -29,6 +29,7 @@ participant Doctor identified by doctorID {
   o String contact 
   o String doctorName
   o String description
+  --> Schedule schedule optional
   }
 
 asset Schedule identified by scheduleID {
@@ -82,7 +83,7 @@ o H23
   
 transaction Scheduler{
   o Schedule schedule
-  --> Doctor docID
+  --> Doctor doctor
 }
 
 transaction GetAvailableDoctors{
