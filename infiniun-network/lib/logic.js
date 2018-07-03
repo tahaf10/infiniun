@@ -94,20 +94,19 @@ function addDoctor(newDoctor) {
           })
     }
   
-  /**
-   * @param {org.acme.GetDrugs} drugs
+   /**
+   * @param {org.acme.ShareDrugswithPharmacy} drugs
    * @transaction
    */
   
-   function getDrugs(drugs){
+  function ShareDrugswithPharmacy(drugs){
   
-      return getAssetRegistry('org.acme.SharedDrugs')
-          .then(function(sharedDrugsRegistry){
-              sharedDrugsRegistry.addAll([drugs.sharedDrugs]);
-            
-            })
-      
-   }
+    return getAssetRegistry('org.acme.SharedDrugs')
+        .then(function(sharedDrugsRegistry){
+            sharedDrugsRegistry.addAll([drugs.sharedDrugs]);
+          
+          })
+ }
 
    
   
@@ -168,9 +167,9 @@ function scheduler(sc) {  // eslint-disable-line no-unused-vars
   
     var consultation = factory.newResource(NS,'Consultation',newConsultation.consultation.consultationID);
     
+    consultation.illnessDescription=newConsultation.consultation.illnessDescription;
     consultation.patient = factory.newRelationship(NS,'Patient',newConsultation.consultation.patient.patientID);
     consultation.doctor = factory.newRelationship(NS,'Doctor',newConsultation.consultation.doctor.doctorID);
-
 
 
     return getAssetRegistry('org.acme.Consultation')

@@ -1,12 +1,45 @@
 /*
 Query file for infiniun model
 */
-
+query getSharedDrugs {
+  description: "Select a consultation"
+  statement:
+      SELECT org.acme.SharedDrugs
+      WHERE (pharmacy == _$pharmacyID) 
+         
+}
+query getDoctor {
+  description: "Select a consultation"
+  statement:
+      SELECT org.acme.Doctor
+      WHERE (doctorID == _$doctorID) 
+         
+}
 query selectConsultation {
   description: "Select a consultation"
   statement:
       SELECT org.acme.Consultation
-          WHERE (patient == _$patient AND consultationCompleted == false)
+      WHERE (doctor == _$doctorID) 
+         
+}
+query selectConsultationPatient {
+  description: "Select a consultation"
+  statement:
+      SELECT org.acme.Consultation
+      WHERE (patient == _$patientID) 
+         
+}
+query selectTreatmentPatient {
+  description: "Select a consultation"
+  statement:
+      SELECT org.acme.Treatment
+      WHERE (consultation == _$consultationID) 
+}
+query selectTreatmentDrugs {
+  description: "Select a consultation"
+  statement:
+      SELECT org.acme.TreatmentDrugs
+      WHERE (treatment == _$ctreatmentID) 
 }
 
 
