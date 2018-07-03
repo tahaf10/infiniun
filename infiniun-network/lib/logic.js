@@ -12,29 +12,26 @@ function addDoctor(newDoctor) {
     var NS='org.acme';
     var doctor = factory.newResource(NS,'Doctor',newDoctor.doctor.doctorID);
     doctor.contact = newDoctor.doctor.contact;
-    doctor.doctorName = newDoctor.doctor.doctorName;
-    doctor.description = newDoctor.doctor.description;
-    //doctor.doctorSchedule = newDoctor.doctor.doctorSchedule;
+    doctor.doctorSchedule = newDoctor.doctor.doctorSchedule;
   
     
     return getParticipantRegistry('org.acme.Doctor')
         .then(function(doctorRegistry){
           doctorRegistry.addAll([doctor]);
     })
-}
-
-/** 
- @param {org.acme.addPatient} newPatient
-@transaction
-*/
-
+  }
+  
+  /** 
+  @param {org.acme.addPatient} newPatient
+  @transaction
+  */
+  
   function addPatient (newPatient) {
   
       var factory = getFactory(); 
       var NS='org.acme';
       var patient = factory.newResource(NS,'Patient',newPatient.patient.patientID);
-      patient.family=factory.newRelationship(NS,'Family',newPatient.patient.family.familyID);
-      patient.relationship = newPatient.patient.relationship;
+      patient.contact = newPatient.patient.contact;
   
       return getParticipantRegistry('org.acme.Patient')
         .then(function(patientRegistry){
@@ -45,21 +42,20 @@ function addDoctor(newDoctor) {
 
   
   /**
-  *@param {org.acme.addFamily} newFamily
+  *@param {org.acme.addPatientRelative} newRelative
   *@transaction
   */
   
-  function addFamily(newFamily){
+  function addPatientRelative(newRelative){
       var factory = getFactory();
       var NS='org.acme';
   
-      var family=factory.newResource(NS,'Family',newFamily.family.familyID);
-      family.contact = newFamily.family.contact;
-      family.name = newFamily.family.name;
+      var patientRelative=factory.newResource(NS,'PatientRelative',newRelative.patientRelative.patientRelativeID);
+      patientRelative.patient=factory.newRelationship(NS,'Patient',newRelative.patientRelative.patient.patientID);
   
-      return getParticipantRegistry('org.acme.Family')
+      return getParticipantRegistry('org.acme.PatientRelative')
       .then(function(consultationDataRegistry){
-          consultationDataRegistry.addAll([family]);
+          consultationDataRegistry.addAll([patientRelative]);
       })
   }
   
@@ -99,11 +95,11 @@ function addDoctor(newDoctor) {
     }
   
   /**
-   * @param {org.acme.ShareDrugswithPharmacy} drugs
+   * @param {org.acme.GetDrugs} drugs
    * @transaction
    */
   
-   function ShareDrugswithPharmacy(drugs){
+   function getDrugs(drugs){
   
       return getAssetRegistry('org.acme.SharedDrugs')
           .then(function(sharedDrugsRegistry){
@@ -112,23 +108,9 @@ function addDoctor(newDoctor) {
             })
       
    }
-/** 
- * @param {org.acme.ShareDrugsPharmacyUpdate} drugs
- * @transaction
-*/
+
    
-  function ShareDrugsPharmacyUpdate(drugs) {
-    var factory = getFactory();
-    var NS='org.acme';
-    
-    return getAssetRegistry('org.acme.SharedDrugs')
-    .then(function(sharedDrugsRegistry){
-        drugs.sharedDrugs.availability = drugs.pharmacyUpdate.availability;
-        drugs.sharedDrugs.price = drugs.pharmacyUpdate.price;
-        drugs.sharedDrugs.orderCompleted = true;
-        sharedDrugsRegistry.update(drugs.sharedDrugs);
-  })
-  }
+  
 
 /**
 * @param {org.acme.GetAvailableDoctors} sc
@@ -172,6 +154,7 @@ function scheduler(sc) {  // eslint-disable-line no-unused-vars
     })
   
 }
+ 
 
 
     /**
@@ -384,24 +367,3 @@ function scheduler(sc) {  // eslint-disable-line no-unused-vars
         })
           
   }
-
-  /**
-    * @param {org.acme.PatientAllowAccess} tempConsultation
-    * @transaction
-    */
-  
-   function PatientAllowAccess(tempConsultation) {
-    var factory = getFactory();
-    var NS='org.acme';
-    
-    //var consult = factory.newRelationship(NS,'Consultation',tempConsultation.consultation.consultationID);
-
-    tempConsultation.consultation.consultationAccess = tempConsultation.doctor.doctorID;
-
-
-    return getAssetRegistry('org.acme.Consultation')
-     .then(function(consultationDataRegistry){
-
-     consultationDataRegistry.update(tempConsultation.consultation);
- })
-}
