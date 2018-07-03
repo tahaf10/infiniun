@@ -167,7 +167,7 @@ asset Treatment identified by treatmentID{
 
 asset Consultation identified by consultationID {
   o String consultationID
-  o String illnessDescription default = 'Not updated'
+  o String illnessDescription 
   o String message default = 'Not Updated'
   o Boolean consultationCompleted default = false
 
@@ -213,11 +213,12 @@ transaction EndConsultation {
 
 }
 
-transaction GetDrugs {
+transaction ShareDrugswithPharmacy {
   o SharedDrugs sharedDrugs
   --> TreatmentDrugs treatmentDrugs
   --> Pharmacy pharmacy
 }
+
 
 transaction addDoctor {
   o Doctor doctor

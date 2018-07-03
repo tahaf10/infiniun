@@ -1,6 +1,6 @@
 {
   "name": "infiniun-network",
-  "version": "0.0.9",
+  "version": "0.0.21",
   "description": "Digital Healthcare",
   "scripts": {
     "prepublish": "composer archive create -t dir -n . -a infiniun-network.bna && composer network install -a infiniun-network.bna -c PeerAdmin@hlfv1",
