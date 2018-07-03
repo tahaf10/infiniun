@@ -145,7 +145,6 @@ asset SharedDrugs identified by sharedDrugID{
 concept PharmacyUpdate{
   o String availability default = 'Not Updated'
   o String price default = 'Not Updated'
-  o Boolean orderCompleted default = false
 }
 
 asset HospitalTreatment identified by hospTreatmentID{
@@ -227,6 +226,7 @@ transaction ShareDrugswithPharmacy {
 
 transaction ShareDrugsPharmacyUpdate {
   --> SharedDrugs sharedDrugs
+  o PharmacyUpdate pharmacyUpdate
 }
 
 transaction addDoctor {

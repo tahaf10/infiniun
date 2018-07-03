@@ -123,8 +123,8 @@ function addDoctor(newDoctor) {
     
     return getAssetRegistry('org.acme.SharedDrugs')
     .then(function(sharedDrugsRegistry){
-        drugs.sharedDrugs.availability = drugs.PharmacyUpdate.availability;
-        drugs.sharedDrugs.price = drugs.PharmacyUpdate.price;
+        drugs.sharedDrugs.availability = drugs.pharmacyUpdate.availability;
+        drugs.sharedDrugs.price = drugs.pharmacyUpdate.price;
         drugs.sharedDrugs.orderCompleted = true;
         sharedDrugsRegistry.update(drugs.sharedDrugs);
   })
